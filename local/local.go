@@ -10,9 +10,9 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/rkcloudchain/extfs"
+	"github.com/rkcloudchain/extfs/util"
 )
 
 const (
@@ -20,19 +20,19 @@ const (
 	defaultCreateMode    = 0666
 )
 
-// Local is a filesystem based on the local filesystem.
-type Local struct {
+// local is a filesystem based on the local filesystem.
+type local struct {
 	base string
 }
 
 // New returns a local filesystem.
 func New(baseDir string) extfs.Filesystem {
-	return &Local{baseDir}
+	return &local{baseDir}
 }
 
 // Create ...
-func (fs *Local) Create(filename string) (extfs.File, error) {
-	fullpath, err := fs.underlyingPath(filename)
+func (fs *local) Create(filename string) (extfs.File, error) {
+	fullpath, err := util.UnderlyingPath(fs.base, filename)
 	if err != nil {
 		return nil, err
 	}
@@ -41,8 +41,8 @@ func (fs *Local) Create(filename string) (extfs.File, error) {
 }
 
 // Open ...
-func (fs *Local) Open(filename string) (extfs.File, error) {
-	fullpath, err := fs.underlyingPath(filename)
+func (fs *local) Open(filename string) (extfs.File, error) {
+	fullpath, err := util.UnderlyingPath(fs.base, filename)
 	if err != nil {
 		return nil, err
 	}
@@ -51,8 +51,8 @@ func (fs *Local) Open(filename string) (extfs.File, error) {
 }
 
 // OpenFile ...
-func (fs *Local) OpenFile(filename string, flag int, perm os.FileMode) (extfs.File, error) {
-	fullpath, err := fs.underlyingPath(filename)
+func (fs *local) OpenFile(filename string, flag int, perm os.FileMode) (extfs.File, error) {
+	fullpath, err := util.UnderlyingPath(fs.base, filename)
 	if err != nil {
 		return nil, err
 	}
@@ -61,14 +61,14 @@ func (fs *Local) OpenFile(filename string, flag int, perm os.FileMode) (extfs.Fi
 }
 
 // Rename ...
-func (fs *Local) Rename(from, to string) error {
+func (fs *local) Rename(from, to string) error {
 	var err error
-	from, err = fs.underlyingPath(from)
+	from, err = util.UnderlyingPath(fs.base, from)
 	if err != nil {
 		return err
 	}
 
-	to, err = fs.underlyingPath(to)
+	to, err = util.UnderlyingPath(fs.base, to)
 	if err != nil {
 		return err
 	}
@@ -81,8 +81,8 @@ func (fs *Local) Rename(from, to string) error {
 }
 
 // Remove ...
-func (fs *Local) Remove(filename string) error {
-	fullpath, err := fs.underlyingPath(filename)
+func (fs *local) Remove(filename string) error {
+	fullpath, err := util.UnderlyingPath(fs.base, filename)
 	if err != nil {
 		return err
 	}
@@ -91,8 +91,8 @@ func (fs *Local) Remove(filename string) error {
 }
 
 // RemoveAll ...
-func (fs *Local) RemoveAll(path string) error {
-	fullpath, err := fs.underlyingPath(path)
+func (fs *local) RemoveAll(path string) error {
+	fullpath, err := util.UnderlyingPath(fs.base, path)
 	if err != nil {
 		return err
 	}
@@ -101,8 +101,8 @@ func (fs *Local) RemoveAll(path string) error {
 }
 
 // ReadDir ...
-func (fs *Local) ReadDir(path string) ([]os.FileInfo, error) {
-	fullpath, err := fs.underlyingPath(path)
+func (fs *local) ReadDir(path string) ([]os.FileInfo, error) {
+	fullpath, err := util.UnderlyingPath(fs.base, path)
 	if err != nil {
 		return nil, err
 	}
@@ -116,8 +116,8 @@ func (fs *Local) ReadDir(path string) ([]os.FileInfo, error) {
 }
 
 // MkdirAll ...
-func (fs *Local) MkdirAll(path string, perm os.FileMode) error {
-	fullpath, err := fs.underlyingPath(path)
+func (fs *local) MkdirAll(path string, perm os.FileMode) error {
+	fullpath, err := util.UnderlyingPath(fs.base, path)
 	if err != nil {
 		return err
 	}
@@ -126,8 +126,8 @@ func (fs *Local) MkdirAll(path string, perm os.FileMode) error {
 }
 
 // Stat ...
-func (fs *Local) Stat(filename string) (os.FileInfo, error) {
-	fullpath, err := fs.underlyingPath(filename)
+func (fs *local) Stat(filename string) (os.FileInfo, error) {
+	fullpath, err := util.UnderlyingPath(fs.base, filename)
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +135,12 @@ func (fs *Local) Stat(filename string) (os.FileInfo, error) {
 	return os.Stat(fullpath)
 }
 
-func (fs *Local) openFile(filename string, flag int, perm os.FileMode) (extfs.File, error) {
+// Close ...
+func (fs *local) Close() error {
+	return nil
+}
+
+func (fs *local) openFile(filename string, flag int, perm os.FileMode) (extfs.File, error) {
 	if flag&os.O_CREATE != 0 {
 		if err := fs.createDir(filename); err != nil {
 			return nil, err
@@ -145,7 +150,7 @@ func (fs *Local) openFile(filename string, flag int, perm os.FileMode) (extfs.Fi
 	return os.OpenFile(filename, flag, perm)
 }
 
-func (fs *Local) createDir(fullpath string) error {
+func (fs *local) createDir(fullpath string) error {
 	dir := filepath.Dir(fullpath)
 	if dir != "." {
 		if err := os.MkdirAll(dir, defaultDirectoryMode); err != nil {
@@ -154,19 +159,4 @@ func (fs *Local) createDir(fullpath string) error {
 	}
 
 	return nil
-}
-
-func (fs *Local) underlyingPath(filename string) (string, error) {
-	if isCrossBoundaries(filename) {
-		return "", extfs.ErrCrossedBoundary
-	}
-
-	return filepath.Join(fs.base, filename), nil
-}
-
-func isCrossBoundaries(path string) bool {
-	path = filepath.ToSlash(path)
-	path = filepath.Clean(path)
-
-	return strings.HasPrefix(path, ".."+string(filepath.Separator))
 }

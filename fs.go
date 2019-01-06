@@ -31,6 +31,8 @@ type File interface {
 type Filesystem interface {
 	Basic
 	Dir
+
+	Close() error
 }
 
 // Basic abstract the basic operations in a storage-agnostic interface.
