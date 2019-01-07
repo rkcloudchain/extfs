@@ -83,8 +83,6 @@ echo "PATH : "$PATH
 sudo groupadd hadoop
 sudo adduser travis hadoop
 
-ssh-keygen -t rsa -f ~/.ssh/id_rsa -P '' && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-
 sudo mkdir -p /etc/hadoop
 sudo mkdir -p /opt/hdfs/data /opt/hdfs/name
 sudo chown -R travis:hadoop /opt/hdfs
@@ -93,6 +91,7 @@ sudo -u travis /usr/local/hadoop/bin/hdfs namenode -format -nonInteractive
 sudo cp /usr/local/hadoop/etc/hadoop/*.* /etc/hadoop
 
 echo -e "\n"
-sudo /usr/local/hadoop/sbin/start-dfs.sh
-
+sudo /usr/local/hadoop/sbin/hadoop-daemon.sh start datanode
+sudo /usr/local/hadoop/sbin/hadoop-daemon.sh start namenode
 echo -e "\n"
+/usr/local/hadoop/bin/hdfs dfsadmin -safemode wait
