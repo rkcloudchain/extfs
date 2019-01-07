@@ -1,5 +1,8 @@
 #!/bin/sh
-
+# Copyright RocKontrol Corp. 2019 All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 set -e
 
 sudo apt-get update

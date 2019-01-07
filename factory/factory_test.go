@@ -1,3 +1,9 @@
+/*
+Copyright RocKontrol Corp. 2019 All Rights Reserved.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+
 package factory
 
 import (
