@@ -6,8 +6,8 @@ sudo apt-get update
 sudo apt-get install -y default-jdk wget
 java -version
 
-wget http://mirrors.hust.edu.cn/apache/hadoop/common/hadoop-2.9.2/hadoop-2.9.2.tar.gz
-tar -xzvf hadoop-2.9.2.tar.gz
+wget https://www-us.apache.org/dist/hadoop/common/hadoop-2.9.2/hadoop-2.9.2.tar.gz
+tar -xzf hadoop-2.9.2.tar.gz
 sudo mv hadoop-2.9.2 /usr/local/hadoop
 
 JAVAHOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
@@ -78,15 +78,15 @@ EOF
 export HADOOP_HOME=/usr/local/hadoop
 export PATH=$PATH:/usr/local/hadoop/bin:/usr/local/hadoop/sbin
 
+sudo groupadd hadoop
+sudo adduser travis hadoop
+
 ssh-keygen -t rsa -f ~/.ssh/id_rsa -P '' && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 
 sudo mkdir -p /etc/hadoop
 sudo mkdir -p /opt/hdfs/data /opt/hdfs/name
 sudo chown -R travis:hadoop /opt/hdfs
 sudo -u travis hdfs namenode -format -nonInteractive
-
-sudo groupadd hadoop
-sudo adduser travis hadoop
 
 sudo cp /usr/local/hadoop/etc/hadoop/*.* /etc/hadoop
 
