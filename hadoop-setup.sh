@@ -78,6 +78,8 @@ EOF
 export HADOOP_HOME=/usr/local/hadoop
 export PATH=$PATH:/usr/local/hadoop/bin:/usr/local/hadoop/sbin
 
+echo "PATH : "$PATH
+
 sudo groupadd hadoop
 sudo adduser travis hadoop
 
@@ -86,7 +88,7 @@ ssh-keygen -t rsa -f ~/.ssh/id_rsa -P '' && cat ~/.ssh/id_rsa.pub >> ~/.ssh/auth
 sudo mkdir -p /etc/hadoop
 sudo mkdir -p /opt/hdfs/data /opt/hdfs/name
 sudo chown -R travis:hadoop /opt/hdfs
-sudo -u travis hdfs namenode -format -nonInteractive
+sudo -u travis /usr/local/hadoop/bin/hdfs namenode -format -nonInteractive
 
 sudo cp /usr/local/hadoop/etc/hadoop/*.* /etc/hadoop
 
