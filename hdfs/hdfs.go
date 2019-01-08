@@ -67,7 +67,7 @@ func (fs *hadoop) OpenFile(filename string, flag int, perm os.FileMode) (extfs.F
 	if flag&os.O_RDWR != 0 {
 		return nil, errors.New("HDFS file can only be opened as read-only or write-only")
 	}
-	if flag&os.O_WRONLY != 0 && flag&os.O_APPEND == 0 {
+	if flag&os.O_WRONLY != 0 && flag&os.O_CREATE == 0 && flag&os.O_APPEND == 0 {
 		return nil, errors.New("HDFS file can only be append written")
 	}
 

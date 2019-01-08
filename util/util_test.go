@@ -22,3 +22,9 @@ func TestUnderlyingPath(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "/usr/local/Cellar/go/1.11.4/bin/go", fullpath)
 }
+
+func TestEmptyFilename(t *testing.T) {
+	fullpath, err := UnderlyingPath("/cloudchain/test2", "")
+	require.NoError(t, err)
+	assert.Equal(t, "/cloudchain/test2", fullpath)
+}
