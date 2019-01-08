@@ -9,6 +9,7 @@ package extfs
 import (
 	"io"
 	"os"
+	"time"
 )
 
 // File represents a file in the filesystem
@@ -31,8 +32,8 @@ type File interface {
 type Filesystem interface {
 	Basic
 	Dir
-
-	Close() error
+	Change
+	Closer
 }
 
 // Basic abstract the basic operations in a storage-agnostic interface.
@@ -72,4 +73,19 @@ type Dir interface {
 	// yet. and returns nil, or else returns an error. If path is
 	// already a directory, MkdirAll does nothing and returns nil.
 	MkdirAll(path string, perm os.FileMode) error
+}
+
+// Change abstract the FileInfo change related operations in a storage-agnostic
+// interface.
+type Change interface {
+	// Chmod changes the mode of the named file to mode.
+	Chmod(name string, mode os.FileMode) error
+
+	// Chtimes changes the access and modification times of the named file.
+	Chtimes(name string, atime time.Time, mtime time.Time) error
+}
+
+// Closer is the interface that wraps the basic Close method.
+type Closer interface {
+	Close() error
 }

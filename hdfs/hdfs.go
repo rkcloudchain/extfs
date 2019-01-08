@@ -10,6 +10,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/colinmarc/hdfs/v2"
 	"github.com/rkcloudchain/extfs"
@@ -146,6 +147,24 @@ func (fs *hadoop) MkdirAll(path string, perm os.FileMode) error {
 	}
 
 	return fs.client.MkdirAll(fullpath, defaultDirectoryMode)
+}
+
+func (fs *hadoop) Chmod(name string, mode os.FileMode) error {
+	fullpath, err := util.UnderlyingPath(fs.base, name)
+	if err != nil {
+		return err
+	}
+
+	return fs.client.Chmod(fullpath, mode)
+}
+
+func (fs *hadoop) Chtimes(name string, atime time.Time, mtime time.Time) error {
+	fullpath, err := util.UnderlyingPath(fs.base, name)
+	if err != nil {
+		return err
+	}
+
+	return fs.client.Chtimes(fullpath, atime, mtime)
 }
 
 func (fs *hadoop) Close() error {

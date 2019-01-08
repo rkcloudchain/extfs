@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/rkcloudchain/extfs"
 	"github.com/rkcloudchain/extfs/util"
@@ -133,6 +134,24 @@ func (fs *local) Stat(filename string) (os.FileInfo, error) {
 	}
 
 	return os.Stat(fullpath)
+}
+
+func (fs *local) Chmod(name string, mode os.FileMode) error {
+	fullpath, err := util.UnderlyingPath(fs.base, name)
+	if err != nil {
+		return err
+	}
+
+	return os.Chmod(fullpath, mode)
+}
+
+func (fs *local) Chtimes(name string, atime time.Time, mtime time.Time) error {
+	fullpath, err := util.UnderlyingPath(fs.base, name)
+	if err != nil {
+		return err
+	}
+
+	return os.Chtimes(fullpath, atime, mtime)
 }
 
 // Close ...
