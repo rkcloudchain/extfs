@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"syscall"
 	"time"
 
 	"github.com/colinmarc/hdfs/v2"
@@ -83,17 +84,20 @@ func (fs *hadoop) OpenFile(filename string, flag int, perm os.FileMode) (extfs.F
 		return nil, err
 	}
 
+	// github.com/colinmarc/hdfs is temporarily not supported
 	if flag&os.O_TRUNC != 0 {
 		return nil, errors.New("HDFS does not support truncate operation")
 	}
-	if flag&os.O_RDWR != 0 {
+
+	accMode := flag & syscall.O_ACCMODE
+	if accMode == os.O_RDWR {
 		return nil, errors.New("HDFS file can only be opened as read-only or write-only")
 	}
-	if flag&os.O_WRONLY != 0 && flag&os.O_CREATE == 0 && flag&os.O_APPEND == 0 {
+	if accMode == os.O_WRONLY && flag&os.O_CREATE == 0 && flag&os.O_APPEND == 0 {
 		return nil, errors.New("HDFS file can only be append written")
 	}
 
-	if flag&os.O_RDONLY != 0 {
+	if accMode == os.O_RDONLY {
 		return fs.openFile(fullpath)
 	}
 
