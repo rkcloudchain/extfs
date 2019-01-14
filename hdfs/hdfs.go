@@ -9,10 +9,12 @@ package hdfs
 import (
 	"errors"
 	"os"
+	"os/user"
 	"path/filepath"
 	"time"
 
 	"github.com/colinmarc/hdfs/v2"
+	"github.com/colinmarc/hdfs/v2/hadoopconf"
 	"github.com/rkcloudchain/extfs"
 	"github.com/rkcloudchain/extfs/util"
 )
@@ -29,8 +31,27 @@ type hadoop struct {
 }
 
 // New returns a hadoop filesystem.
-func New(host, baseDir string) (extfs.Filesystem, error) {
-	client, err := hdfs.New(host)
+func New(baseDir string, cfg *extfs.Config) (extfs.Filesystem, error) {
+	hadoopCfg, err := hadoopconf.LoadFromEnvironment()
+	if err != nil {
+		return nil, err
+	}
+
+	options := hdfs.ClientOptionsFromConf(hadoopCfg)
+	if len(cfg.Addresses) != 0 {
+		options.Addresses = append(options.Addresses, cfg.Addresses...)
+	}
+	if cfg.User != "" {
+		options.User = cfg.User
+	} else {
+		u, err := user.Current()
+		if err != nil {
+			return nil, err
+		}
+		options.User = u.Username
+	}
+
+	client, err := hdfs.NewClient(options)
 	if err != nil {
 		return nil, err
 	}

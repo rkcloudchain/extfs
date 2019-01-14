@@ -11,6 +11,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/rkcloudchain/extfs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -20,7 +21,7 @@ const (
 )
 
 func TestCreate(t *testing.T) {
-	fs, err := New(hadoopNamenode, "/cloudchain/test1")
+	fs, err := New("/cloudchain/test1", &extfs.Config{Addresses: []string{hadoopNamenode}})
 	require.NoError(t, err)
 	defer fs.Close()
 
@@ -33,7 +34,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestOpen(t *testing.T) {
-	fs, err := New(hadoopNamenode, "/cloudchain/test1")
+	fs, err := New("/cloudchain/test1", &extfs.Config{Addresses: []string{hadoopNamenode}})
 	require.NoError(t, err)
 	defer fs.Close()
 
@@ -47,7 +48,7 @@ func TestOpen(t *testing.T) {
 }
 
 func TestOpenFile(t *testing.T) {
-	fs, err := New(hadoopNamenode, "/cloudchain/test2")
+	fs, err := New("/cloudchain/test2", &extfs.Config{Addresses: []string{hadoopNamenode}})
 	require.NoError(t, err)
 	defer fs.Close()
 
@@ -60,7 +61,7 @@ func TestOpenFile(t *testing.T) {
 }
 
 func TestAppendFile(t *testing.T) {
-	fs, err := New(hadoopNamenode, "/cloudchain/test2")
+	fs, err := New("/cloudchain/test2", &extfs.Config{Addresses: []string{hadoopNamenode}})
 	require.NoError(t, err)
 	defer fs.Close()
 
@@ -73,7 +74,7 @@ func TestAppendFile(t *testing.T) {
 }
 
 func TestRemove(t *testing.T) {
-	fs, err := New(hadoopNamenode, "/cloudchain/test2")
+	fs, err := New("/cloudchain/test2", &extfs.Config{Addresses: []string{hadoopNamenode}})
 	require.NoError(t, err)
 	defer fs.Close()
 

@@ -13,13 +13,14 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/rkcloudchain/extfs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestCreateLocalFilesystem(t *testing.T) {
 	tp := filepath.Join(os.TempDir(), "extfs-factory-test")
-	fs, err := NewFilesystem(fmt.Sprintf("file://%s", tp))
+	fs, err := NewFilesystem(fmt.Sprintf("file://%s", tp), &extfs.Config{})
 	require.NoError(t, err)
 	defer fs.Close()
 
