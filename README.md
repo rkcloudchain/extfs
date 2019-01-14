@@ -27,11 +27,11 @@ extfs currently only supports local filesystem and hadoop filesystem.
 
 ```go
 // local filesystem
-fs, err := factory.NewFilesystem("file:///")
+fs, err := factory.NewFilesystem("file:///", &extfs.Config{})
 
 or
 
-fs, err := factory.NewFilesystem("hdfs:///")
+fs, err := factory.NewFilesystem("hdfs:///", &extfs.Config{User: "hdfsuser"})
 ```
 
 Then, you can use it like you would the OS package.
