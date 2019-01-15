@@ -47,9 +47,10 @@ func New(baseDir string, cfg *extfs.Config) (extfs.Filesystem, error) {
 	} else {
 		u, err := user.Current()
 		if err != nil {
-			return nil, err
+			options.User = "root"
+		} else {
+			options.User = u.Username
 		}
-		options.User = u.Username
 	}
 
 	client, err := hdfs.NewClient(options)
