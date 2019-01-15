@@ -8,3 +8,22 @@ type Config struct {
 	// Addresses specifies the namenode(s) to connect to. HDFS only
 	Addresses []string
 }
+
+// ClientOption func for each Config argument
+type ClientOption func(cfg *Config) error
+
+// WithAddresses option to configure hdfs namenode addresses.
+func WithAddresses(addrs []string) ClientOption {
+	return func(cfg *Config) error {
+		cfg.Addresses = addrs[:]
+		return nil
+	}
+}
+
+// WithUser option to configure hdfs user
+func WithUser(user string) ClientOption {
+	return func(cfg *Config) error {
+		cfg.User = user
+		return nil
+	}
+}

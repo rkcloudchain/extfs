@@ -7,6 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 package factory
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"path/filepath"
@@ -20,6 +21,18 @@ import (
 const (
 	defaultURL = "file:///"
 )
+
+// New returns a filesystem based on url and options
+func New(u string, opts ...extfs.ClientOption) (extfs.Filesystem, error) {
+	cfg := &extfs.Config{}
+	for _, option := range opts {
+		err := option(cfg)
+		if err != nil {
+			return nil, errors.New("Failed to read opts")
+		}
+	}
+	return NewFilesystem(u, cfg)
+}
 
 // NewFilesystem returns a filesystem based on url
 func NewFilesystem(u string, cfg *extfs.Config) (extfs.Filesystem, error) {
