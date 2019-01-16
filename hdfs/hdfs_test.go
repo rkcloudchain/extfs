@@ -81,3 +81,13 @@ func TestRemove(t *testing.T) {
 	err = fs.RemoveAll("")
 	assert.NoError(t, err)
 }
+
+func TestAbs(t *testing.T) {
+	fs, err := New("/cloudchain/test2", &extfs.Config{Addresses: []string{hadoopNamenode}})
+	require.NoError(t, err)
+	defer fs.Close()
+
+	abs, err := fs.Abs("/include")
+	require.NoError(t, err)
+	assert.Equal(t, "/cloudchain/test2/include", abs)
+}

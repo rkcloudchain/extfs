@@ -61,6 +61,10 @@ func New(baseDir string, cfg *extfs.Config) (extfs.Filesystem, error) {
 	return &hadoop{client, baseDir}, nil
 }
 
+func (fs *hadoop) Abs(filename string) (string, error) {
+	return util.UnderlyingPath(fs.base, filename)
+}
+
 func (fs *hadoop) Create(filename string) (extfs.File, error) {
 	fullpath, err := util.UnderlyingPath(fs.base, filename)
 	if err != nil {
