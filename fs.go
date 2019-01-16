@@ -61,9 +61,6 @@ type Basic interface {
 
 	// Stat returns a FileInfo describing the named file.
 	Stat(filename string) (os.FileInfo, error)
-
-	// Abs returns an absolute representation of path
-	Abs(filename string) (string, error)
 }
 
 // Dir abstract the dir related operations in a storage-agnostic interface.

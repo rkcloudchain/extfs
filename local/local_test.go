@@ -62,10 +62,3 @@ func TestRemove(t *testing.T) {
 	_, err = fs.Stat("bar/qux")
 	assert.True(t, os.IsNotExist(err))
 }
-
-func TestAbs(t *testing.T) {
-	fs := New("/usr/local")
-	abs, err := fs.Abs("include")
-	require.NoError(t, err)
-	assert.Equal(t, "/usr/local/include", abs)
-}

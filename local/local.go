@@ -31,10 +31,6 @@ func New(baseDir string) extfs.Filesystem {
 	return &local{baseDir}
 }
 
-func (fs *local) Abs(filename string) (string, error) {
-	return util.UnderlyingPath(fs.base, filename)
-}
-
 // Create ...
 func (fs *local) Create(filename string) (extfs.File, error) {
 	fullpath, err := util.UnderlyingPath(fs.base, filename)
