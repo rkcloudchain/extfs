@@ -51,7 +51,6 @@ ReadDir(path string) ([]os.FileInfo, error)
 MkdirAll(path string, perm os.FileMode) error
 Chmod(name string, mode os.FileMode) error
 Chtimes(name string, atime time.Time, mtime time.Time) error
-Abs(filename string) (string, error)
 Close() error
 ```
 File Interfaces an Methods Available:
