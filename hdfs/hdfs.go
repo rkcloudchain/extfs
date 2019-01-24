@@ -39,6 +39,7 @@ func New(baseDir string, cfg *extfs.Config) (extfs.Filesystem, error) {
 	}
 
 	options := hdfs.ClientOptionsFromConf(hadoopCfg)
+	options.UseDatanodeHostname = cfg.UseDatanodeHostname
 	if len(cfg.Addresses) != 0 {
 		options.Addresses = append(options.Addresses, cfg.Addresses...)
 	}
